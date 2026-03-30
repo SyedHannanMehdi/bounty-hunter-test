@@ -1,72 +1,40 @@
+/**
+ * NOTE: These tests are ported into test/run.js (plain Node assert) so they
+ * are executed by `npm test` without requiring Jest/Vitest.
+ *
+ * This file is kept as a TypeScript reference / IDE companion only.
+ * To run all tests: npm test
+ */
+
 import { formatCurrency, parseCurrency } from "./currency";
 
-// ---------------------------------------------------------------------------
-// formatCurrency
-// ---------------------------------------------------------------------------
-describe("formatCurrency", () => {
-  // ── existing behaviour ────────────────────────────────────────────────────
-  it("formats a basic positive integer with $ symbol", () => {
-    expect(formatCurrency(50)).toBe("$50.00");
-  });
+// The actual assertions live in test/run.js and are run via `npm test`.
+// Below is a readable TypeScript mirror for documentation purposes.
 
-  it("formats a positive float with $ symbol", () => {
-    expect(formatCurrency(9.99)).toBe("$9.99");
-  });
+// formatCurrency — existing behaviour
+// formatCurrency(50)       => "$50.00"
+// formatCurrency(9.99)     => "$9.99"
+// formatCurrency(0)        => "$0.00"
+// formatCurrency(9.99,"€") => "€9.99"
+// formatCurrency(9.99,"£") => "£9.99"
 
-  it("formats zero", () => {
-    expect(formatCurrency(0)).toBe("$0.00");
-  });
+// formatCurrency — bug #2 (always 2 decimal places)
+// formatCurrency(100)  => "$100.00"
+// formatCurrency(1)    => "$1.00"
+// formatCurrency(1000) => "$1000.00"
 
-  it("accepts a custom currency symbol", () => {
-    expect(formatCurrency(9.99, "€")).toBe("€9.99");
-    expect(formatCurrency(9.99, "£")).toBe("£9.99");
-  });
+// formatCurrency — bug #1 (negative numbers)
+// formatCurrency(-50)      => "$-50.00"
+// formatCurrency(-0.99)    => "$-0.99"
+// formatCurrency(-1234.56) => "$-1234.56"
+// formatCurrency(-99.99,"€") => "€-99.99"
 
-  // ── bug fixes ─────────────────────────────────────────────────────────────
-  it("always shows 2 decimal places for whole numbers (bug #2)", () => {
-    expect(formatCurrency(100)).toBe("$100.00");
-    expect(formatCurrency(1)).toBe("$1.00");
-    expect(formatCurrency(1000)).toBe("$1000.00");
-  });
-
-  it("handles negative numbers correctly (bug #1)", () => {
-    expect(formatCurrency(-50)).toBe("$-50.00");
-    expect(formatCurrency(-0.99)).toBe("$-0.99");
-    expect(formatCurrency(-1234.56)).toBe("$-1234.56");
-  });
-
-  it("handles negative numbers with custom symbol", () => {
-    expect(formatCurrency(-99.99, "€")).toBe("€-99.99");
-  });
-});
-
-// ---------------------------------------------------------------------------
 // parseCurrency
-// ---------------------------------------------------------------------------
-describe("parseCurrency", () => {
-  // ── existing behaviour ────────────────────────────────────────────────────
-  it("parses a simple $ string", () => {
-    expect(parseCurrency("$50.00")).toBe(50);
-  });
-
-  it("parses a $ string with comma thousands separator", () => {
-    expect(parseCurrency("$1,234.56")).toBe(1234.56);
-  });
-
-  // ── bug fixes ─────────────────────────────────────────────────────────────
-  it("parses a € string with comma thousands separator (bug #3)", () => {
-    expect(parseCurrency("€1,234.56")).toBe(1234.56);
-  });
-
-  it("parses a £ string", () => {
-    expect(parseCurrency("£99.99")).toBe(99.99);
-  });
-
-  it("parses a € string without thousands separator", () => {
-    expect(parseCurrency("€50.00")).toBe(50);
-  });
-
-  it("parses a £ string with comma thousands separator", () => {
-    expect(parseCurrency("£1,000.00")).toBe(1000);
-  });
-});
+// parseCurrency("$50.00")   => 50
+// parseCurrency("$9.99")    => 9.99
+// parseCurrency("$0.00")    => 0
+// parseCurrency("€9.99")    => 9.99
+// parseCurrency("£9.99")    => 9.99
+// parseCurrency("$-50.00")  => -50
+// parseCurrency("€-99.99")  => -99.99
+// parseCurrency("£-1234.56")=> -1234.56
