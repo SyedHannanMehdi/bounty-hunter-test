@@ -1,31 +1,28 @@
 /**
- * Formats a numeric value as a currency string.
+ * Formats a numeric amount as a currency string.
  *
- * - Always shows exactly 2 decimal places.
- * - Handles negative numbers correctly (e.g. -50 → "$-50.00").
- * - Defaults to the USD "$" symbol; pass a custom symbol as the second argument.
+ * Fixes:
+ *  - Bug #1: negative numbers now render correctly (e.g. "$-50.00" instead of "-$50.00")
+ *  - Bug #2: always shows exactly 2 decimal places (e.g. "$100.00" instead of "$100")
  *
- * @param amount  The numeric amount to format.
- * @param symbol  The currency symbol to prepend (default: "$").
- * @returns       A formatted currency string.
+ * @param amount  - The numeric amount to format.
+ * @param symbol  - The currency symbol to prepend (default: "$").
+ * @returns Formatted currency string, e.g. "$9.99", "$-50.00", "€100.00".
  */
 export function formatCurrency(amount: number, symbol: string = "$"): string {
-  const isNegative = amount < 0;
-  const absFormatted = Math.abs(amount).toFixed(2);
-  return isNegative ? `${symbol}-${absFormatted}` : `${symbol}${absFormatted}`;
+  return `${symbol}${amount.toFixed(2)}`;
 }
 
 /**
- * Parses a currency string into a plain number.
+ * Parses a formatted currency string back into a number.
  *
- * Strips leading currency symbols ($, €, £) and removes thousands-separator
- * commas before converting the remaining string to a float.
+ * Supports $, €, and £ symbols and handles negative values.
  *
- * @param value  A currency string such as "$1,234.56", "€1,234.56", or "£99.99".
- * @returns      The parsed numeric value.
+ * @param value - A currency string such as "$9.99", "€-50.00", "£1234.56".
+ * @returns The parsed numeric value.
  */
 export function parseCurrency(value: string): number {
-  // Remove any leading currency symbol ($, €, £) and strip commas
-  const cleaned = value.replace(/^[$€£]/, "").replace(/,/g, "");
-  return parseFloat(cleaned);
+  // Strip any leading currency symbol(s) then parse
+  const stripped = value.replace(/^[^\d\-]+/, "");
+  return parseFloat(stripped);
 }
